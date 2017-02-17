@@ -5,6 +5,7 @@ import json
 import urllib2
 import random
 import sys
+import emoji
 
 txt = urllib2.urlopen('http://linkedin-reach.hagbpyjegb.us-west-2.elasticbeanstalk.com/words')
 word_list = txt.read().split('\n')
@@ -38,24 +39,26 @@ def displayBoard(HANGMANPICS, missedLetters, correctLetters, secretWord):
 def getGuess(alreadyGuessed):
 
     while True:
-        print('Guess a letter.')
+        print(emoji.emojize('Guess a letter. :abc: ', use_aliases=True))
         guess = raw_input()
         guess = guess.lower()
         if len(guess) != 1:
-            print('Please only enter one letter.')
+            print(emoji.emojize('Please only enter one letter. :capital_abcd: ', use_aliases=True))
         elif guess in alreadyGuessed:
             print('You have already guessed that letter, please choose again.')
         elif guess not in 'abcdefghijklmnopqrstuvwxyz':
-            print('Please enter a letter.')
+            print(emoji.emojize('Please enter a letter. :capital_abcd:', use_aliases=True))
+
         else:
             return guess
 
 def playAgain():
-    print('Do you want to play again?')
-    return input().lower().startswith('y')
+    print(emoji.emojize("Would you like to play again? :cherries: ", use_aliases=True))
+    return raw_input().lower().startswith('y')
 
 
-print('H A N G M A N')
+print(emoji.emojize(":sparkles: *~H A N G M A N~* :sparkles:", use_aliases=True))
+print(emoji.emojize("A Hangman Game implemented in Python :snake:", use_aliases=True))
 missedLetters = ''
 correctLetters = ''
 secretWord = getRandomWord(word_list)
@@ -75,14 +78,14 @@ while True:
                 foundAllLetters = False
                 break
         if foundAllLetters:
-            print('Congratulations! The secret hangman word is ' + secretWord + '! You won!')
+            print(emoji.emojize(':raised_hands: Congratulations! :tada: The secret hangman word is ' + secretWord + '! You won!'))
             gameIsDone = True
     else:
         missedLetters = missedLetters + guess
 
         if len(missedLetters) >= 6:
             displayBoard(HANGMANPICS, missedLetters, correctLetters, secretWord)
-            print("You have run out of guesses!")
+            print(emoji.emojize("You have run out of guesses! :frowning:", use_aliases=True))
             # print("Number of missed letters %d" % str(len(missedLetters))
             # print("The secret word was %s" % secretWord)
             gameIsDone = True
@@ -94,7 +97,7 @@ while True:
             gameIsDone = False
             secretWord = getRandomWord(word_list)
         else:
-            print "Goodbye!"
+            print(emoji.emojize("Goodbye! Have a wonderful day :sunny:", use_aliases=True))
             sys.exit(1)
 
 #
