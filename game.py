@@ -1,40 +1,38 @@
 import click
-import requests
-from pprint import pprint
-import json
 import urllib2
 import random
 import sys
 import emoji
+import string
+from hangmanstatus import hangmanstatus
 
 txt = urllib2.urlopen('http://linkedin-reach.hagbpyjegb.us-west-2.elasticbeanstalk.com/words')
 word_list = txt.read().split('\n')
 print len(word_list)
 
-HANGMANPICS = ['1', '2', '3', '4', '5', '6', '7']
-def getRandomWord(wordList):
+def get_random_word(word_list):
     random.shuffle(word_list)
     print word_list[0]
     return word_list[0]
 
-def displayBoard(HANGMANPICS, missedLetters, correctLetters, secretWord):
-    print(HANGMANPICS[len(missedLetters)])
+def display_board(hangmanstatus, missed_letters, correct_letters, secret_word):
+    print(hangmanstatus[len(missed_letters)])
     print()
 
     print('Missed letters:')
-    for letter in missedLetters:
+    for letter in missed_letters:
         print(letter)
-    print()
+        print "_____"
 
-    blanks = '_' * len(secretWord)
+    blanks = '_' * len(secret_word)
 
-    for i in range(len(secretWord)):
-        if secretWord[i] in correctLetters:
-            blanks = blanks[:i] + secretWord[i] + blanks[i+1:]
+    for i in range(len(secret_word)):
+        if secret_word[i] in correct_letters:
+            blanks = blanks[:i] + secret_word[i] + blanks[i+1:]
 
     for letter in blanks:
         print(letter)
-    print()
+    print "______"
 
 def getGuess(alreadyGuessed):
 
@@ -46,7 +44,7 @@ def getGuess(alreadyGuessed):
             print(emoji.emojize('Please only enter one letter. :capital_abcd: ', use_aliases=True))
         elif guess in alreadyGuessed:
             print('You have already guessed that letter, please choose again.')
-        elif guess not in 'abcdefghijklmnopqrstuvwxyz':
+        elif guess not in string.ascii_lowercase:
             print(emoji.emojize('Please enter a letter. :capital_abcd:', use_aliases=True))
 
         else:
@@ -59,46 +57,46 @@ def playAgain():
 
 print(emoji.emojize(":sparkles: *~H A N G M A N~* :sparkles:", use_aliases=True))
 print(emoji.emojize("A Hangman Game implemented in Python :snake:", use_aliases=True))
-missedLetters = ''
-correctLetters = ''
-secretWord = getRandomWord(word_list)
-gameIsDone = False
+missed_letters = ''
+correct_letters = ''
+secret_word = get_random_word(word_list)
+game_is_done = False
 
 while True:
-    displayBoard(HANGMANPICS, missedLetters, correctLetters, secretWord)
+    display_board(hangmanstatus, missed_letters, correct_letters, secret_word)
 
-    guess = getGuess(missedLetters + correctLetters)
+    guess = getGuess(missed_letters + correct_letters)
 
-    if guess in secretWord:
-        correctLetters += guess
+    if guess in secret_word:
+        correct_letters += guess
 
-        foundAllLetters = True
-        for i in range(len(secretWord)):
-            if secretWord[i] not in correctLetters:
-                foundAllLetters = False
+        found_all_letters = True
+        for i in range(len(secret_word)):
+            if secret_word[i] not in correct_letters:
+                found_all_letters = False
                 break
-        if foundAllLetters:
-            print(emoji.emojize(':raised_hands: Congratulations! :tada: The secret hangman word is ' + secretWord + '! You won!'))
-            gameIsDone = True
+        if found_all_letters:
+            print(emoji.emojize(':raised_hands: Congratulations! :tada: The secret hangman word is %s! You won!', use_aliases=True) % secret_word)
+            game_is_done = True
     else:
-        missedLetters = missedLetters + guess
+        missed_letters = missed_letters + guess
 
-        if len(missedLetters) >= 6:
-            displayBoard(HANGMANPICS, missedLetters, correctLetters, secretWord)
+        if len(missed_letters) >= 6:
+            display_board(hangmanstatus, missed_letters, correct_letters, secret_word)
             print(emoji.emojize("You have run out of guesses! :frowning:", use_aliases=True))
-            # print("Number of missed letters %d" % str(len(missedLetters))
-            # print("The secret word was %s" % secretWord)
-            gameIsDone = True
+            print "You incorrectly guessed %d letters" % len(missed_letters)
+            print "The secret word was '%s'" % secret_word
+            game_is_done = True
 
-    if gameIsDone is True:
+    if game_is_done is True:
         if playAgain():
-            missedLetters = ''
-            correctLetters = ''
-            gameIsDone = False
-            secretWord = getRandomWord(word_list)
+            missed_letters = ''
+            correct_letters = ''
+            game_is_done = False
+            secret_word = get_random_word(word_list)
         else:
             print(emoji.emojize("Goodbye! Have a wonderful day :sunny:", use_aliases=True))
-            sys.exit(1)
+            sys.exit()
 
 #
 # @click.command()
