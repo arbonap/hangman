@@ -9,7 +9,6 @@ import json
 import argparse
 import pdb
 from hangmanstatus import hangmanstatus
-from retrying import retry
 
 txt = urllib2.urlopen('http://linkedin-reach.hagbpyjegb.us-west-2.elasticbeanstalk.com/words')
 word_list = txt.read().split('\n')
@@ -89,7 +88,7 @@ def display_board(hangmanstatus, missed_letters, correct_letters, secret_word):
             blanks = blanks[:i] + secret_word[i] + blanks[i+1:]
 
     for letter in blanks:
-        print(letter)
+        sys.stdout.write(letter)
     print "______"
 
 def get_guess(already_guessed):
@@ -133,7 +132,7 @@ while True:
                 found_all_letters = False
                 break
         if found_all_letters:
-            print(emoji.emojize(':raised_hands: Congratulations! :tada: The secret hangman word is %s! You won!', use_aliases=True) % secret_word)
+            print(emoji.emojize(':raised_hands: Congratulations! :tada: You correctly figured out that the secret hangman word is %s! You won!', use_aliases=True) % secret_word)
             game_is_done = True
     else:
         missed_letters = missed_letters + guess
